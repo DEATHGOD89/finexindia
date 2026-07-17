@@ -10,19 +10,27 @@ export class ChartManager {
             this.charts.emi.destroy();
         }
         
-        const labels = schedule.filter((_, i) => i % 12 === 0 || i === schedule.length - 1).map(r => `Month ${r.month}`);
-        const principalData = schedule.filter((_, i) => i % 12 === 0 || i === schedule.length - 1).map(r => r.principal);
-        const interestData = schedule.filter((_, i) => i % 12 === 0 || i === schedule.length - 1).map(r => r.interest);
+        if (!schedule || schedule.length === 0) {
+            this.charts.emi = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['No Data'],
+                    datasets: [{ data: [1], backgroundColor: ['#333'], borderWidth: 0 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+            return;
+        }
+
+        const totalPrincipal = schedule.reduce((sum, r) => sum + r.principal, 0);
+        const totalInterest = schedule.reduce((sum, r) => sum + r.interest, 0);
         
         this.charts.emi = new Chart(ctx, {
             type: 'doughnut',
             data: {
                 labels: ['Principal', 'Total Interest'],
                 datasets: [{
-                    data: [
-                        schedule[0].balance + schedule.reduce((sum, r) => sum + r.principal, 0),
-                        schedule.reduce((sum, r) => sum + r.interest, 0)
-                    ],
+                    data: [totalPrincipal, totalInterest],
                     backgroundColor: ['#283593', '#ff6f00'],
                     borderWidth: 0
                 }]
