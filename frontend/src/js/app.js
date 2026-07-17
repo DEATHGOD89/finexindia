@@ -204,17 +204,74 @@ window.navigateTo = (pageId) => { app.navigateTo(pageId); };
 const app = new FinanceApp();
 
 // ============ EMI ============
+window.toggleEmiMode = function() {
+    const mode = document.querySelector('input[name="emiCalcMode"]:checked').value;
+    
+    // Toggle EMI input visibility
+    document.getElementById('emiInputGroup').style.display = (mode === 'emi') ? 'none' : 'block';
+    
+    // Reset badges and disabled states
+    document.querySelectorAll('#loanAmountGroup .calc-badge, #interestRateGroup .calc-badge, #loanTenureGroup .calc-badge').forEach(el => el.style.display = 'none');
+    ['loanAmount', 'loanAmountRange', 'interestRate', 'interestRateRange', 'loanTenure', 'loanTenureRange'].forEach(id => {
+        const el = document.getElementById(id);
+        el.disabled = false;
+        el.style.opacity = '1';
+    });
+    
+    if (mode === 'principal') {
+        document.querySelector('#loanAmountGroup .calc-badge').style.display = 'inline-block';
+        ['loanAmount', 'loanAmountRange'].forEach(id => {
+            document.getElementById(id).disabled = true;
+            document.getElementById(id).style.opacity = '0.5';
+        });
+    } else if (mode === 'rate') {
+        document.querySelector('#interestRateGroup .calc-badge').style.display = 'inline-block';
+        ['interestRate', 'interestRateRange'].forEach(id => {
+            document.getElementById(id).disabled = true;
+            document.getElementById(id).style.opacity = '0.5';
+        });
+    } else if (mode === 'tenure') {
+        document.querySelector('#loanTenureGroup .calc-badge').style.display = 'inline-block';
+        ['loanTenure', 'loanTenureRange'].forEach(id => {
+            document.getElementById(id).disabled = true;
+            document.getElementById(id).style.opacity = '0.5';
+        });
+    }
+    
+    calculateEMI();
+};
+
 window.calculateEMI = function() {
+    const mode = document.querySelector('input[name="emiCalcMode"]:checked')?.value || 'emi';
+    const expectedEmi = parseFloat(document.getElementById('expectedEmi').value) || 0;
     const amount = parseFloat(document.getElementById('loanAmount').value) || 0;
     const rate = parseFloat(document.getElementById('interestRate').value) || 0;
     const tenure = parseFloat(document.getElementById('loanTenure').value) || 0;
 
-    const emiCalc = new EMICalculator(amount, rate, tenure);
+    const emiCalc = new EMICalculator(amount, rate, tenure, expectedEmi, mode);
     const result = emiCalc.calculate();
 
-    document.getElementById('loanAmountRange').value = amount;
-    document.getElementById('interestRateRange').value = rate;
-    document.getElementById('loanTenureRange').value = tenure;
+    if (result.error) {
+        document.getElementById('emiResult').textContent = 'Error';
+        document.getElementById('totalInterest').textContent = '₹0';
+        document.getElementById('totalPayment').textContent = '₹0';
+        return;
+    }
+
+    if (mode === 'principal') {
+        document.getElementById('loanAmount').value = result.principal;
+        document.getElementById('loanAmountRange').value = result.principal;
+    } else if (mode === 'rate') {
+        document.getElementById('interestRate').value = result.rate;
+        document.getElementById('interestRateRange').value = result.rate;
+    } else if (mode === 'tenure') {
+        document.getElementById('loanTenure').value = result.tenure;
+        document.getElementById('loanTenureRange').value = result.tenure;
+    } else {
+        document.getElementById('loanAmountRange').value = amount;
+        document.getElementById('interestRateRange').value = rate;
+        document.getElementById('loanTenureRange').value = tenure;
+    }
 
     document.getElementById('emiResult').textContent = app.currency.format(result.emi);
     document.getElementById('totalInterest').textContent = app.currency.format(result.totalInterest);
