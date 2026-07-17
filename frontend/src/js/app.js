@@ -245,7 +245,7 @@ window.calculateSIP = function() {
 window.calculateTax = async function() {
     const btn = document.querySelector('#page-tax .btn-primary');
     const originalText = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Calculating via API...';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Calculating...';
     btn.disabled = true;
 
     try {
@@ -255,29 +255,23 @@ window.calculateTax = async function() {
         const hra = parseFloat(document.getElementById('taxHRA').value) || 0;
         const homeLoan = parseFloat(document.getElementById('taxHomeLoan').value) || 0;
 
-        const response = await fetch('http://localhost:8080/api/v1/tax/calculate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                income: income,
-                section_80c: section80C,
-                section_80d: section80D,
-                hra: hra,
-                home_loan: homeLoan
-            })
+        // Perform calculation completely client-side using the imported class
+        const calculator = new IndianTaxCalculator(income, {
+            section80C: section80C,
+            section80D: section80D,
+            hra: hra,
+            homeLoan: homeLoan
         });
-
-        if (!response.ok) throw new Error('API Error');
-        const result = await response.json();
-
-        // The Go backend returns camelCase fields in struct tags but in my Go code it was snake_case?
-        // Wait, let's check Go struct tags: `json:"old_regime"`, `json:"tax"`
-        // I need to use result.old_regime.tax and result.new_regime.tax
         
-        document.getElementById('oldRegimeTax').textContent = app.currency.format(result.old_regime.tax);
-        document.getElementById('newRegimeTax').textContent = app.currency.format(result.new_regime.tax);
+        // Simulate a slight delay to show the loading state
+        await new Promise(r => setTimeout(r, 400));
+        
+        const result = calculator.calculate();
 
-        const savings = result.old_regime.tax - result.new_regime.tax;
+        document.getElementById('oldRegimeTax').textContent = app.currency.format(result.oldRegime.tax);
+        document.getElementById('newRegimeTax').textContent = app.currency.format(result.newRegime.tax);
+
+        const savings = result.oldRegime.tax - result.newRegime.tax;
         const recommended = savings > 0 ? 'Old' : 'New';
         const savingsAmount = Math.abs(savings);
 
@@ -288,13 +282,13 @@ window.calculateTax = async function() {
         app.historyManager.saveCalculation('Tax', 
             { income, section80C, section80D, hra, homeLoan }, 
             { 
-                oldRegime: { tax: result.old_regime.tax }, 
-                newRegime: { tax: result.new_regime.tax } 
+                oldRegime: { tax: result.oldRegime.tax }, 
+                newRegime: { tax: result.newRegime.tax } 
             }
         );
     } catch (e) {
-        console.error(e);
-        alert('Failed to connect to the Go backend API.');
+        console.error("Tax Calculation Error:", e);
+        alert('Failed to calculate tax. Please check your inputs.');
     } finally {
         btn.innerHTML = originalText;
         btn.disabled = false;
