@@ -26,7 +26,7 @@ module.exports = {
             patterns: [
                 { from: 'public/manifest.json', to: 'manifest.json' },
                 { from: 'public/sw.js', to: 'sw.js' },
-                { from: 'public/_redirects', to: '_redirects' },
+                { from: 'public/_redirects' },
                 { from: 'public/assets', to: 'assets' }
             ]
         })
