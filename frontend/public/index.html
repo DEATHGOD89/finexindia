@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ff5722">
+    <title>India Finance Pro - EMI, Tax, SIP Calculator</title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/assets/icons/icon-192.png">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body onload="setTimeout(() => { document.getElementById('page-loader').classList.add('fade-out'); }, 1200)">
+    <div id="page-loader" style="pointer-events: none;"><div class="loader-pulse"></div></div>
+    <div id="landing-page" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #050505; z-index: 9999; display: flex; flex-direction: column; font-family: 'Outfit', sans-serif; overflow-y: auto;">
+        <div style="padding: 2rem 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(5,5,5,0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000;">
+            <div style="color: white; font-size: 1.5rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-chart-pie" style="color: #ff5722;"></i> FinancePro
+            </div>
+            
+            <div class="landing-nav-links" style="display: flex; gap: 2.5rem; color: #a1a1aa; font-weight: 500; font-size: 0.95rem; align-items: center; margin: 0 auto; padding-left: 2rem;">
+                <a href="#" style="color: #a1a1aa; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#ff5722'" onmouseout="this.style.color='#a1a1aa'">Features</a>
+                <a href="#" style="color: #a1a1aa; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#ff5722'" onmouseout="this.style.color='#a1a1aa'">Security</a>
+                <a href="#" style="color: #a1a1aa; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#ff5722'" onmouseout="this.style.color='#a1a1aa'">Testimonials</a>
+                <a href="#" style="color: #a1a1aa; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#ff5722'" onmouseout="this.style.color='#a1a1aa'">API</a>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 1.5rem;">
+                <a href="https://github.com/financepro" style="color: #a1a1aa; text-decoration: none; font-size: 0.95rem; transition: color 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#a1a1aa'"><i class="fab fa-github"></i> View Source</a>
+                <button style="background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.2); padding: 0.5rem 1.2rem; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.3s; font-family: 'Outfit', sans-serif;" onmouseover="this.style.background='white'; this.style.color='black';" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.color='white';">Sign In</button>
+            </div>
+        </div>
+        
+        <div style="flex: 1 0 auto; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 10vh 2rem 2rem 2rem; position: relative; min-height: 80vh; justify-content: flex-start;">
+            <canvas id="particle-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none;"></canvas>
+            <div style="position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(255,87,34,0.15) 0%, rgba(0,0,0,0) 70%); top: 40%; left: 50%; transform: translate(-50%, -50%); z-index: 0; pointer-events: none;"></div>
+            
+            <h1 style="color: white; font-size: 4.5rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 1.5rem; z-index: 1; animation: fadeDown 0.8s ease-out;">
+                Predict. Plan. <span style="color: #ff5722;">Prosper.</span>
+            </h1>
+            
+            <p style="color: #a1a1aa; font-size: 1.25rem; max-width: 650px; line-height: 1.6; margin-bottom: 3.5rem; z-index: 1; animation: fadeUp 1s ease-out;">
+                The ultimate financial engine for modern professionals. Compare cross-border loan rates, decode complex tax laws, and visualize your wealth trajectory in seconds.
+            </p>
+            
+            <div style="display: flex; gap: 2rem; z-index: 1; animation: fadeUp 1.2s ease-out; flex-wrap: wrap; justify-content: center; margin-bottom: 4rem;">
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 2rem; width: 100%; max-width: 400px; text-align: left; transition: transform 0.3s, border-color 0.3s; cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column;" onmouseover="this.style.transform='translateY(-8px)'; this.style.borderColor='rgba(255,87,34,0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(255,255,255,0.05)';">
+                    <div style="width: 56px; height: 56px; background: linear-gradient(135deg, rgba(255,87,34,0.2) 0%, rgba(255,87,34,0) 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.2rem; border: 1px solid rgba(255,87,34,0.2);">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff5722" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12M6 8h12M6 13l6.5 9.5M15 13H6M10.5 13C13.535 13 16 10.761 16 8"/></svg>
+                    </div>
+                    <h3 style="color: white; font-size: 1.6rem; margin-bottom: 0.6rem; font-weight: 700;">India Edition</h3>
+                    <p style="color: #a1a1aa; font-size: 0.95rem; line-height: 1.5; margin-bottom: 1.5rem; flex: 1;">Hyper-localized for the Indian market. Includes PPF, NPS, and Old vs New Tax Regime calculators tailored to the latest budget.</p>
+                    <button onclick="selectPlatform('india')" style="background: #ff5722; color: white; border: none; padding: 0.9rem 1.5rem; border-radius: 8px; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 1.05rem; cursor: pointer; width: 100%; transition: background 0.2s; margin-top: auto;" onmouseover="this.style.background='#e64a19'" onmouseout="this.style.background='#ff5722'">
+                        Start India Edition <i class="fas fa-arrow-right" style="margin-left: 0.5rem;"></i>
+                    </button>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 2rem; width: 100%; max-width: 400px; text-align: left; transition: transform 0.3s, border-color 0.3s; cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column;" onmouseover="this.style.transform='translateY(-8px)'; this.style.borderColor='rgba(56,189,248,0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(255,255,255,0.05)';">
+                    <div style="width: 56px; height: 56px; background: linear-gradient(135deg, rgba(56,189,248,0.2) 0%, rgba(56,189,248,0) 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.2rem; border: 1px solid rgba(56,189,248,0.2);">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    </div>
+                    <h3 style="color: white; font-size: 1.6rem; margin-bottom: 0.6rem; font-weight: 700;">Global Edition</h3>
+                    <p style="color: #a1a1aa; font-size: 0.95rem; line-height: 1.5; margin-bottom: 1.5rem; flex: 1;">Cross-border financial planning. Live currency conversion and multi-country loan comparisons across US, UK, Canada, and more.</p>
+                    <button onclick="selectPlatform('global')" style="background: transparent; color: white; border: 1px solid rgba(255,255,255,0.2); padding: 0.9rem 1.5rem; border-radius: 8px; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 1.05rem; cursor: pointer; width: 100%; transition: background 0.2s, border-color 0.2s; margin-top: auto;" onmouseover="this.style.background='rgba(56,189,248,0.1)'; this.style.borderColor='rgba(56,189,248,0.4)';" onmouseout="this.style.background='transparent'; this.style.borderColor='rgba(255,255,255,0.2)';">
+                        Start Global Edition <i class="fas fa-arrow-right" style="margin-left: 0.5rem;"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <a href="#why-choose-us" style="color: white; text-decoration: none; animation: fadeUp 1.5s ease-out; margin-top: 2rem; opacity: 0.7; transition: opacity 0.3s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
+                <i class="fas fa-chevron-down" style="font-size: 2rem; animation: bounce 2s infinite;"></i>
+            </a>
+        </div>
+        
+        <div id="why-choose-us" style="padding: 6rem 5%; background: rgba(255,255,255,0.01); border-top: 1px solid rgba(255,255,255,0.05);">
+            <div style="text-align: center; margin-bottom: 4rem;">
+                <h2 style="color: white; font-size: 3rem; font-weight: 800; margin-bottom: 1rem;">Why Choose FinancePro?</h2>
+                <p style="color: #a1a1aa; font-size: 1.2rem; max-width: 600px; margin: 0 auto;">We built the most advanced financial planning tools so you don't have to use spreadsheets.</p>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 2rem; justify-content: center; max-width: 1200px; margin: 0 auto;">
+                <div style="flex: 1; min-width: 300px; padding: 2rem; background: rgba(10,10,10,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; text-align: left;">
+                    <i class="fas fa-bolt" style="font-size: 2.5rem; color: #ff5722; margin-bottom: 1.5rem;"></i>
+                    <h4 style="color: white; font-size: 1.5rem; margin-bottom: 1rem;">Lightning Fast</h4>
+                    <p style="color: #a1a1aa; line-height: 1.6;">Our client-side computation engine processes amortization schedules and tax tables instantly without server delays.</p>
+                </div>
+                <div style="flex: 1; min-width: 300px; padding: 2rem; background: rgba(10,10,10,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; text-align: left;">
+                    <i class="fas fa-globe-americas" style="font-size: 2.5rem; color: #ff5722; margin-bottom: 1.5rem;"></i>
+                    <h4 style="color: white; font-size: 1.5rem; margin-bottom: 1rem;">Cross-Border Ready</h4>
+                    <p style="color: #a1a1aa; line-height: 1.6;">Whether you are an NRI or a global citizen, instantly compare local vs international loan rates with live currency exchange.</p>
+                </div>
+                <div style="flex: 1; min-width: 300px; padding: 2rem; background: rgba(10,10,10,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; text-align: left;">
+                    <i class="fas fa-shield-alt" style="font-size: 2.5rem; color: #ff5722; margin-bottom: 1.5rem;"></i>
+                    <h4 style="color: white; font-size: 1.5rem; margin-bottom: 1rem;">100% Private</h4>
+                    <p style="color: #a1a1aa; line-height: 1.6;">Your financial data never leaves your browser. All tax and goal calculations happen securely on your own device.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-top: auto; text-align: center; color: #52525b; font-size: 0.9rem; padding: 2rem;">
+            © 2024 FinancePro. Designed for precision.
+        </div>
+        
+        <style>
+            @keyframes fadeDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes fadeUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-20px);} 60% {transform: translateY(-10px);} }
+            @media (max-width: 768px) {
+                #landing-page h1 { font-size: 2.5rem !important; }
+                #landing-page p { font-size: 1rem !important; }
+            }
+            @media (max-width: 480px) {
+                #landing-page h1 { font-size: 1.8rem !important; }
+                #landing-page > div:first-child { padding: 1rem 4% !important; }
+                #landing-page > div:first-child div:first-child { font-size: 1.1rem !important; }
+                #landing-page > div:nth-child(2) { padding: 5vh 1rem 2rem 1rem !important; }
+                #landing-page #why-choose-us { padding: 3rem 1rem !important; }
+                #landing-page #why-choose-us h2 { font-size: 2rem !important; margin-bottom: 0.5rem !important; }
+                #landing-page #why-choose-us > div:first-child p { font-size: 1rem !important; }
+                #landing-page #why-choose-us > div:last-child { gap: 1rem !important; }
+                #landing-page #why-choose-us > div:last-child > div { min-width: unset !important; width: 100% !important; padding: 1.5rem !important; }
+                #landing-page > div:nth-child(2) > div:first-child { width: 300px !important; height: 250px !important; top: 30% !important; left: 50% !important; }
+                #landing-page > div:nth-child(2) > div:nth-child(4) { gap: 1rem !important; margin-bottom: 2rem !important; }
+                .landing-nav-links { display: none !important; }
+            }
+        </style>
+        <script>
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+            
+            const particles = [];
+            const particleCount = Math.min(100, Math.floor(window.innerWidth / 12));
+            
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    vx: (Math.random() - 0.5) * 0.8,
+                    vy: (Math.random() - 0.5) * 0.8,
+                    radius: Math.random() * 2 + 0.5
+                });
+            }
+            
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    
+                    if (p.x < 0 || p.x > width) p.vx *= -1;
+                    if (p.y < 0 || p.y > height) p.vy *= -1;
+                    
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255, 87, 34, 0.5)';
+                    ctx.fill();
+                    
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const p2 = particles[j];
+                        const dx = p.x - p2.x;
+                        const dy = p.y - p2.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (dist < 150) {
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.strokeStyle = `rgba(255, 87, 34, ${0.2 - dist/750})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(animate);
+            }
+            
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+            
+            animate();
+        </script>
+    </div>
+    <div id="app">
+        <!-- Top Navigation -->
+        <nav class="navbar" role="navigation">
+            <div class="nav-brand" style="cursor: pointer;" onclick="document.getElementById('landing-page').style.display='flex'; document.getElementById('app').style.display='none';">
+                <i class="fas fa-rupee-sign india-only"></i>
+                <i class="fas fa-globe-americas global-only" style="display:none;"></i>
+                <span>FinancePro</span>
+                <span class="tagline">India</span>
+            </div>
+            
+            <div class="nav-links" id="navLinks">
+                <a href="#" data-page="dashboard" class="active">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="#" data-page="emi">
+                    <i class="fas fa-calculator"></i> EMI
+                </a>
+                <a href="#" data-page="sip">
+                    <i class="fas fa-chart-line"></i> SIP
+                </a>
+                <a href="#" data-page="loan-comparison" class="india-only">
+                    <i class="fas fa-balance-scale"></i> Compare
+                </a>
+                <a href="#" data-page="global-loan" class="global-only" style="display:none;">
+                    <i class="fas fa-globe"></i> Global Loans
+                </a>
+                <a href="#" data-page="tax" class="india-only">
+                    <i class="fas fa-file-invoice"></i> Tax
+                </a>
+                <a href="#" data-page="goals">
+                    <i class="fas fa-bullseye"></i> Goals
+                </a>
+                <a href="#" data-page="history">
+                    <i class="fas fa-history"></i> History
+                </a>
+            </div>
+            
+            <div class="nav-right">
+                <!-- Country Selector -->
+                <div class="language-selector global-only" style="display:none; margin-right: 1rem;">
+                    <button id="countryBtn"><i class="fas fa-map-marker-alt"></i> US</button>
+                    <div class="lang-dropdown">
+                        <a href="#" data-country="US">🇺🇸 <span data-i18n="United States">United States</span></a>
+                        <a href="#" data-country="GB">🇬🇧 <span data-i18n="United Kingdom">United Kingdom</span></a>
+                        <a href="#" data-country="EU">🇪🇺 <span data-i18n="European Union">European Union</span></a>
+                        <a href="#" data-country="CA">🇨🇦 <span data-i18n="Canada">Canada</span></a>
+                        <a href="#" data-country="AU">🇦🇺 <span data-i18n="Australia">Australia</span></a>
+                    </div>
+                </div>
+
+                <!-- Language Selector -->
+                <div class="language-selector">
+                    <button id="langBtn"><i class="fas fa-globe"></i> EN</button>
+                    <div class="lang-dropdown">
+                        <a href="#" data-lang="en">English</a>
+                        <a href="#" data-lang="hi">हिन्दी</a>
+                        <a href="#" data-lang="te">తెలుగు</a>
+                        <a href="#" data-lang="ta">தமிழ்</a>
+                        <a href="#" data-lang="kn">ಕನ್ನಡ</a>
+                    </div>
+                </div>
+                
+                <!-- Dark Mode Toggle -->
+                <button id="themeToggle" class="theme-btn">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+            
+            <button class="mobile-menu" id="mobileMenu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="container">
+            <!-- Dashboard -->
+            <section id="page-dashboard" class="page active">
+                <div class="dashboard-grid">
+                    <div class="quick-calc">
+                        <h2><i class="fas fa-bolt"></i> Quick Calculators</h2>
+                        <div class="calc-grid">
+                            <div class="calc-card" onclick="navigateTo('emi')">
+                                <i class="fas fa-home"></i>
+                                <h3>Home Loan EMI</h3>
+                                <p>Calculate monthly payments</p>
+                            </div>
+                            <div class="calc-card" onclick="navigateTo('sip')">
+                                <i class="fas fa-coins"></i>
+                                <h3>SIP Returns</h3>
+                                <p>Plan your investments</p>
+                            </div>
+                            <div class="calc-card india-only" onclick="navigateTo('tax')">
+                                <i class="fas fa-file-invoice"></i>
+                                <h3>Tax Calculator</h3>
+                                <p>Old vs New Regime</p>
+                            </div>
+                            <div class="calc-card india-only" onclick="navigateTo('loan-comparison')">
+                                <i class="fas fa-balance-scale"></i>
+                                <h3>Compare Loans</h3>
+                                <p>Find best rates</p>
+                            </div>
+                            <div class="calc-card global-only" onclick="navigateTo('global-loan')" style="display:none;">
+                                <i class="fas fa-globe"></i>
+                                <h3>Global Loans</h3>
+                                <p>Cross-border comparison</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="featured-calculators india-only">
+                        <h2><i class="fas fa-star"></i> Popular in India</h2>
+                        <div class="calc-grid">
+                            <div class="calc-card" onclick="navigateTo('ppf')">
+                                <i class="fas fa-piggy-bank"></i>
+                                <h3>PPF Calculator</h3>
+                                <p>Public Provident Fund</p>
+                            </div>
+                            <div class="calc-card" onclick="navigateTo('nps')">
+                                <i class="fas fa-university"></i>
+                                <h3>NPS Calculator</h3>
+                                <p>National Pension System</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- EMI Calculator -->
+            <section id="page-emi" class="page">
+                <div class="calculator-wrapper">
+                    <div class="calc-header">
+                        <h1><i class="fas fa-calculator"></i> EMI Calculator</h1>
+                        <p>Calculate your monthly loan payments instantly</p>
+                    </div>
+                    
+                    <div class="calc-body">
+                        <div class="input-section">
+                            <div class="form-group">
+                                <label for="loanAmount">Loan Amount (₹)</label>
+                                <div class="input-with-slider">
+                                    <input type="number" id="loanAmount" value="5000000" min="1000" max="100000000" step="10000">
+                                    <input type="range" id="loanAmountRange" min="1000" max="100000000" value="5000000" step="10000">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="interestRate">Interest Rate (%)</label>
+                                <div class="input-with-slider">
+                                    <input type="number" id="interestRate" value="8.5" min="1" max="25" step="0.1">
+                                    <input type="range" id="interestRateRange" min="1" max="25" value="8.5" step="0.1">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="loanTenure">Tenure (Years)</label>
+                                <div class="input-with-slider">
+                                    <input type="number" id="loanTenure" value="20" min="1" max="40" step="1">
+                                    <input type="range" id="loanTenureRange" min="1" max="40" value="20" step="1">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="processingFee">Processing Fee (%)</label>
+                                <input type="number" id="processingFee" value="0.5" min="0" max="5" step="0.1">
+                            </div>
+                            
+                            <button class="btn-primary" onclick="calculateEMI()">
+                                <i class="fas fa-calculator"></i> Calculate EMI
+                            </button>
+                        </div>
+                        
+                        <div class="result-section">
+                            <div class="result-cards">
+                                <div class="result-card">
+                                    <h4>Monthly EMI</h4>
+                                    <div class="result-value" id="emiResult">₹41,822</div>
+                                </div>
+                                <div class="result-card">
+                                    <h4>Total Interest</h4>
+                                    <div class="result-value" id="totalInterest">₹50,37,277</div>
+                                </div>
+                                <div class="result-card">
+                                    <h4>Total Payment</h4>
+                                    <div class="result-value" id="totalPayment">₹1,00,37,277</div>
+                                </div>
+                            </div>
+                            
+                            <div class="chart-container">
+                                <canvas id="emiChart"></canvas>
+                            </div>
+                            
+                            <div class="amortization-container">
+                                <h3>Amortization Schedule</h3>
+                                <div class="schedule-controls">
+                                    <button onclick="exportSchedule()"><i class="fas fa-file-pdf"></i> PDF</button>
+                                    <button onclick="exportScheduleExcel()"><i class="fas fa-file-excel"></i> Excel</button>
+                                </div>
+                                <div class="schedule-table-wrapper" id="scheduleTable">
+                                    <!-- Dynamically populated -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SIP Calculator -->
+            <section id="page-sip" class="page">
+                <div class="calculator-wrapper">
+                    <div class="calc-header">
+                        <h1><i class="fas fa-chart-line"></i> SIP Calculator</h1>
+                        <p>Plan your monthly investments for wealth creation</p>
+                    </div>
+                    
+                    <div class="calc-body">
+                        <div class="input-section">
+                            <div class="form-group">
+                                <label>Monthly Investment (₹)</label>
+                                <input type="number" id="sipAmount" value="5000" min="500" max="1000000" step="500">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Expected Return (%)</label>
+                                <input type="number" id="sipReturn" value="12" min="1" max="30" step="0.5">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Investment Period (Years)</label>
+                                <input type="number" id="sipYears" value="10" min="1" max="40" step="1">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Step-up (%)</label>
+                                <input type="number" id="sipStepup" value="0" min="0" max="20" step="1">
+                                <small>Increase investment annually</small>
+                            </div>
+                            
+                            <button class="btn-primary" onclick="calculateSIP()">
+                                <i class="fas fa-chart-line"></i> Calculate Returns
+                            </button>
+                        </div>
+                        
+                        <div class="result-section">
+                            <div class="result-cards">
+                                <div class="result-card">
+                                    <h4>Total Investment</h4>
+                                    <div class="result-value" id="sipTotalInvestment">₹6,00,000</div>
+                                </div>
+                                <div class="result-card">
+                                    <h4>Estimated Returns</h4>
+                                    <div class="result-value" id="sipReturns">₹11,00,000</div>
+                                </div>
+                                <div class="result-card">
+                                    <h4>Maturity Value</h4>
+                                    <div class="result-value" id="sipMaturity">₹17,00,000</div>
+                                </div>
+                            </div>
+                            
+                            <div class="chart-container">
+                                <canvas id="sipChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tax Calculator -->
+            <section id="page-tax" class="page india-only">
+                <div class="calculator-wrapper">
+                    <div class="calc-header">
+                        <h1><i class="fas fa-file-invoice"></i> Income Tax Calculator</h1>
+                        <p>Compare Old vs New Tax Regime for FY 2024-25</p>
+                    </div>
+                    
+                    <div class="calc-body">
+                        <div class="input-section">
+                            <div class="form-group">
+                                <label>Annual Income (₹)</label>
+                                <input type="number" id="taxIncome" value="1200000" min="100000" max="100000000" step="10000">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Section 80C (₹)</label>
+                                <input type="number" id="tax80C" value="150000" min="0" max="150000" step="1000">
+                                <small>PPF, ELSS, Life Insurance, etc.</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Section 80D (₹)</label>
+                                <input type="number" id="tax80D" value="25000" min="0" max="100000" step="1000">
+                                <small>Health Insurance Premium</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>HRA Exemption (₹)</label>
+                                <input type="number" id="taxHRA" value="0" min="0" max="1000000" step="1000">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Home Loan Interest (₹)</label>
+                                <input type="number" id="taxHomeLoan" value="0" min="0" max="200000" step="1000">
+                            </div>
+                            
+                            <button class="btn-primary" onclick="calculateTax()">
+                                <i class="fas fa-file-invoice"></i> Calculate Tax
+                            </button>
+                        </div>
+                        
+                        <div class="result-section">
+                            <div class="tax-comparison">
+                                <div class="tax-regime-card">
+                                    <h3>Old Regime</h3>
+                                    <div class="tax-amount" id="oldRegimeTax">₹0</div>
+                                    <div class="tax-breakdown" id="oldRegimeBreakdown"></div>
+                                </div>
+                                <div class="tax-regime-card recommended">
+                                    <h3>New Regime</h3>
+                                    <div class="tax-amount" id="newRegimeTax">₹0</div>
+                                    <div class="tax-breakdown" id="newRegimeBreakdown"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="savings-banner" id="taxSavings">
+                                <i class="fas fa-rupee-sign"></i>
+                                <span>You save ₹0 by choosing the <strong id="recommendedRegime">Old</strong> Regime</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Loan Comparison -->
+            <section id="page-loan-comparison" class="page india-only">
+                <div class="calculator-wrapper">
+                    <div class="calc-header">
+                        <h1><i class="fas fa-balance-scale"></i> Loan Comparison</h1>
+                        <p>Compare loans from top Indian banks</p>
+                    </div>
+                    
+                    <div class="calc-body">
+                        <div class="input-section">
+                            <div class="form-group">
+                                <label>Loan Amount (₹)</label>
+                                <input type="number" id="compareAmount" value="3000000" min="100000" max="100000000" step="10000">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Tenure (Years)</label>
+                                <input type="number" id="compareTenure" value="20" min="1" max="40" step="1">
+                            </div>
+                            
+                            <button class="btn-primary" onclick="compareLoans()">
+                                <i class="fas fa-balance-scale"></i> Compare Banks
+                            </button>
+                        </div>
+                        
+                        <div class="result-section">
+                            <div class="comparison-table-wrapper">
+                                <table class="comparison-table" id="comparisonTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Bank</th>
+                                            <th>Interest Rate</th>
+                                            <th>Processing Fee</th>
+                                            <th>Monthly EMI</th>
+                                            <th>Total Interest</th>
+                                            <th>Score</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="comparisonBody">
+                                        <!-- Dynamically populated -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Global Loan Comparison -->
+            <section id="page-global-loan" class="page global-only">
+                <div class="calculator-wrapper">
+                    <div class="calc-header">
+                        <h1><i class="fas fa-globe"></i> Global Loan Comparison</h1>
+                        <p>Compare cross-border loans and live exchange rates</p>
+                    </div>
+                    
+                    <div class="calc-body">
+                        <div class="input-section">
+                            <div class="form-group">
+                                <label>Loan Amount (Local Currency)</label>
+                                <input type="number" id="glAmount" value="50000" min="1000" max="10000000" step="1000">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Tenure (Years)</label>
+                                <input type="number" id="glTenure" value="20" min="1" max="40" step="1">
+                            </div>
+                            
+                            <button class="btn-primary" onclick="compareGlobalLoans()">
+                                <i class="fas fa-globe-americas"></i> Compare International Banks
+                            </button>
+                        </div>
+                        
+                        <div class="result-section">
+                            <div class="comparison-table-wrapper">
+                                <table class="comparison-table" id="glComparisonTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Bank</th>
+                                            <th>Interest Rate</th>
+                                            <th>Processing Fee</th>
+                                            <th>Monthly EMI</th>
+                                            <th>Total Interest</th>
+                                            <th>Score</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="glComparisonBody">
+                                        <!-- Dynamically populated -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Goals Calculator -->
+            <section id="page-goals" class="page">
+                <div class="calculator-wrapper">
+                    <div class="calc-header">
+                        <h1><i class="fas fa-bullseye"></i> Goal Planner</h1>
+                        <p>Calculate required SIP for your future goals</p>
+                    </div>
+                    
+                    <div class="calc-body">
+                        <div class="input-section">
+                            <div class="form-group">
+                                <label>Goal Type</label>
+                                <select id="goalType">
+                                    <option value="house">Buy House</option>
+                                    <option value="retirement">Retirement</option>
+                                    <option value="education">Children's Education</option>
+                                    <option value="marriage">Marriage</option>
+                                    <option value="custom">Custom</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Target Amount (₹)</label>
+                                <input type="number" id="goalAmount" value="5000000" min="100000" max="100000000" step="10000">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Years to Achieve (Years)</label>
+                                <input type="number" id="goalYears" value="10" min="1" max="50" step="1">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Expected Return Rate (%)</label>
+                                <input type="number" id="goalReturn" value="12" min="1" max="30" step="0.5">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Existing Savings (₹)</label>
+                                <input type="number" id="goalExisting" value="0" min="0" max="10000000" step="1000">
+                            </div>
+                            
+                            <button class="btn-primary" onclick="calculateGoal()">
+                                <i class="fas fa-bullseye"></i> Calculate Required SIP
+                            </button>
+                        </div>
+                        
+                        <div class="result-section">
+                            <div class="result-cards">
+                                <div class="result-card">
+                                    <h4>Monthly SIP Required</h4>
+                                    <div class="result-value" id="goalSIP">₹0</div>
+                                </div>
+                                <div class="result-card">
+                                    <h4>Total Investment</h4>
+                                    <div class="result-value" id="goalTotalInvestment">₹0</div>
+                                </div>
+                                <div class="result-card">
+                                    <h4>Maturity Value</h4>
+                                    <div class="result-value" id="goalMaturity">₹0</div>
+                                </div>
+                            </div>
+                            
+                            <div class="chart-container">
+                                <canvas id="goalChart"></canvas>
+                            </div>
+                            
+                            <div class="goal-timeline" id="goalTimeline">
+                                <!-- Dynamically populated -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- History View -->
+            <section id="page-history" class="page">
+                <div class="calculator-wrapper">
+                    <div class="calc-header">
+                        <h1><i class="fas fa-history"></i> Calculation History</h1>
+                        <p>Your previous calculations (stored securely on your device)</p>
+                    </div>
+                    
+                    <div class="calc-body">
+                        <div id="historyList" style="display: flex; flex-direction: column; gap: 1rem; width: 100%;">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PPF Calculator -->
+            <section id="page-ppf" class="page india-only">
+                <div class="calculator-wrapper">
+                    <div class="calc-header">
+                        <h1><i class="fas fa-piggy-bank"></i> PPF Calculator</h1>
+                        <p>Public Provident Fund - Tax saving up to ₹1.5L under 80C</p>
+                    </div>
+                    <div class="calc-body">
+                        <div class="input-section">
+                            <div class="form-group">
+                                <label>Annual Investment (₹)</label>
+                                <input type="number" id="ppfAmount" value="150000" min="500" max="150000" step="500">
+                            </div>
+                            <div class="form-group">
+                                <label>Interest Rate (%)</label>
+                                <input type="number" id="ppfRate" value="7.1" min="1" max="15" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label>Tenure (Years)</label>
+                                <input type="number" id="ppfTenure" value="15" min="15" max="50" step="1">
+                            </div>
+                            <button class="btn-primary" onclick="calculatePPF()">
+                                <i class="fas fa-calculator"></i> Calculate PPF
+                            </button>
+                        </div>
+                        <div class="result-section">
+                            <div class="result-cards">
+                                <div class="result-card">
+                                    <h4>Total Investment</h4>
+                                    <div class="result-value" id="ppfInvestment">₹0</div>
+                                </div>
+                                <div class="result-card">
+                                    <h4>Interest Earned</h4>
+                                    <div class="result-value" id="ppfInterest">₹0</div>
+                                </div>
+                                <div class="result-card">
+                                    <h4>Maturity Value</h4>
+                                    <div class="result-value" id="ppfMaturity">₹0</div>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="ppfChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- NPS Calculator -->
+            <section id="page-nps" class="page india-only">
+                <div class="calculator-wrapper">
+                    <div class="calc-header">
+                        <h1><i class="fas fa-university"></i> NPS Calculator</h1>
+                        <p>National Pension System - Plan your retirement</p>
+                    </div>
+                    <div class="calc-body">
+                        <div class="input-section">
+                            <div class="form-group">
+                                <label>Monthly Contribution (₹)</label>
+                                <input type="number" id="npsAmount" value="5000" min="500" max="100000" step="500">
+                            </div>
+                            <div class="form-group">
+                                <label>Expected Return (%)</label>
+                                <input type="number" id="npsRate" value="10" min="1" max="20" step="0.5">
+                            </div>
+                            <div class="form-group">
+                                <label>Years to Retirement</label>
+                                <input type="number" id="npsYears" value="25" min="5" max="40" step="1">
+                            </div>
+                            <button class="btn-primary" onclick="calculateNPS()">
+                                <i class="fas fa-calculator"></i> Calculate NPS
+                            </button>
+                        </div>
+                        <div class="result-section">
+                            <div class="result-cards">
+                                <div class="result-card">
+                                    <h4>Total Investment</h4>
+                                    <div class="result-value" id="npsInvestment">₹0</div>
+                                </div>
+                                <div class="result-card">
+                                    <h4>Corpus at Retirement</h4>
+                                    <div class="result-value" id="npsCorpus">₹0</div>
+                                </div>
+                                <div class="result-card">
+                                    <h4>Monthly Pension</h4>
+                                    <div class="result-value" id="npsPension">₹0</div>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="npsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>FinancePro India</h4>
+                    <p>Making financial planning simple for every Indian</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <a href="#">About Us</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Follow Us</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 FinancePro India. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        window.selectPlatform = function(version) {
+            document.getElementById('landing-page').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            
+            const indiaElements = document.querySelectorAll('.india-only');
+            const globalElements = document.querySelectorAll('.global-only');
+            
+            if (version === 'india') {
+                indiaElements.forEach(el => el.style.display = '');
+                globalElements.forEach(el => el.style.display = 'none');
+                document.querySelector('.tagline').textContent = 'India';
+            } else {
+                indiaElements.forEach(el => el.style.display = 'none');
+                globalElements.forEach(el => el.style.display = '');
+                document.querySelector('.tagline').textContent = 'Global';
+            }
+            
+            // Navigate to default dashboard
+            const homeLink = document.querySelector('a[data-page="dashboard"]');
+            if(homeLink) homeLink.click();
+        };
+    </script>
+</body>
+</html>

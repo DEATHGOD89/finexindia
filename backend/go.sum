@@ -1,0 +1,12 @@
+github.com/gorilla/mux v1.8.1 h1:TuMoUvkRETdXqU+3x7dUo8A2s/UY7+ETjE4V8B2/IM=
+github.com/gorilla/mux v1.8.1/go.mod h1:AKf9I4AEqPTmMytcMc0KkNouC66V3BtZ4qD5fmWSiMQ=
+github.com/rs/cors v1.10.1 h1:L0uuZVXIKlI1SShY2nhFfo44TYvDPQ1w4oFkUJNfhyo=
+github.com/rs/cors v1.10.1/go.mod h1:XyqrcTp5zjWr1wsJ8PIRZssZ8b/WMcMf71DJnit4EMU=
+github.com/lib/pq v1.10.9 h1:YXG7RB+JIjhP29X+OtkiDnYaXQwpS4JEWq7dtCCRUEw=
+github.com/lib/pq v1.10.9/go.mod h1:AlVN5x4E4T544tWzH6hKFbGRn7nbIqu9HhEDnDfBS4g=
+github.com/golang-jwt/jwt/v5 v5.1.0 h1:UGKbA/IPjtS6zLcdB7i5TyLcg0ZApGGozGScm4FQuiw=
+github.com/golang-jwt/jwt/v5 v5.1.0/go.mod h1:pqrtFR0X4osieyHYxtmOUWsAWrfe1Q5UVIyoH402zdk=
+golang.org/x/crypto v0.16.0 h1:mMMrFzRSCF0yrN1y0BpM5cYJ9L5U4e0rJY6vK3qH6FY=
+golang.org/x/crypto v0.16.0/go.mod h1:gCAAfMLgwOJRpTjQ2zCC2sO8UQ4v0H0r5pO0V0d39E=
+github.com/joho/godotenv v1.5.1 h1:7eLL/T0+8r7M/2J0c8g1N0f0V0g8U8h8bB4b2td/XcE=
+github.com/joho/godotenv v1.5.1/go.mod h1:f4LDr5Voq0i2e/R5DDNOoa2zzDfwtkZa6DnEwAbqwq4=

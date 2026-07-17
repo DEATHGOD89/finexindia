@@ -1,0 +1,23 @@
+{
+    "name": "indian-finance-platform",
+    "version": "1.0.0",
+    "description": "Complete financial planning platform for Indian users",
+    "main": "src/js/app.js",
+    "scripts": {
+        "start": "webpack serve --mode development --open",
+        "build": "webpack --mode production",
+        "dev": "webpack serve --mode development"
+    },
+    "dependencies": {
+        "chart.js": "^4.4.0"
+    },
+    "devDependencies": {
+        "copy-webpack-plugin": "^11.0.0",
+        "css-loader": "^7.1.4",
+        "html-webpack-plugin": "^5.5.3",
+        "style-loader": "^4.0.0",
+        "webpack": "^5.88.0",
+        "webpack-cli": "^5.1.4",
+        "webpack-dev-server": "^4.15.1"
+    }
+}
