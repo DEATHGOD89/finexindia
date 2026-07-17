@@ -17,12 +17,17 @@
         min-height: 64px;
     }
     
+    .nav-brand {
+        order: 1;
+    }
+
     .nav-links {
         display: none;
         width: 100%;
         flex-direction: column;
         padding: 1rem 0;
         gap: 0.3rem;
+        order: 4;
     }
     
     .nav-links.open {
@@ -36,12 +41,16 @@
     
     .mobile-menu {
         display: block;
+        order: 3;
+        margin-left: 0.5rem;
     }
     
     .nav-right {
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        order: 2;
+        margin-left: auto;
     }
     
     .container {

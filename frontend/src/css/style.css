@@ -195,7 +195,7 @@ body {
 /* Animations for Loader & Landing Page */
 #page-loader {
     position: fixed;
-    top: 0; left: 0; width: 100vw; height: 100vh;
+    top: 0; left: 0; width: 100vw; height: 100dvh;
     background: var(--bg-color);
     z-index: 10000;
     display: flex;
