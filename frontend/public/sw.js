@@ -1,36 +1,18 @@
-const CACHE_NAME = 'financepro-v1';
+const CACHE_NAME = 'financepro-v2';
 const urlsToCache = [
     '/',
     '/index.html',
     '/manifest.json',
-    '/src/css/style.css',
-    '/src/css/responsive.css',
-    '/src/js/app.js',
-    '/src/js/calculators/emi.js',
-    '/src/js/calculators/sip.js',
-    '/src/js/tax/indianTax.js',
-    '/src/js/loan/comparison.js',
-    '/src/js/planning/goalPlanner.js',
-    '/src/js/utils/currency.js',
-    '/src/js/utils/i18n.js',
+    '/js/bundle.js',
     '/assets/icons/icon-192.png',
     '/assets/icons/icon-512.png'
 ];
 
 self.addEventListener('install', event => {
+    self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => cache.addAll(urlsToCache))
-    );
-});
-
-self.addEventListener('fetch', event => {
-    event.respondWith(
-        caches.match(event.request)
-            .then(response => response || fetch(event.request))
-            .catch(() => {
-                return caches.match('/offline.html');
-            })
     );
 });
 
@@ -44,6 +26,25 @@ self.addEventListener('activate', event => {
                     }
                 })
             );
+        }).then(() => self.clients.claim())
+    );
+});
+
+// Network-first strategy for HTML and JS to ensure updates are always fetched
+self.addEventListener('fetch', event => {
+    event.respondWith(
+        fetch(event.request).then(response => {
+            // If network fetch is successful, clone it and update the cache
+            if (response && response.status === 200 && response.type === 'basic') {
+                const responseToCache = response.clone();
+                caches.open(CACHE_NAME).then(cache => {
+                    cache.put(event.request, responseToCache);
+                });
+            }
+            return response;
+        }).catch(() => {
+            // If network fails (offline), fallback to cache
+            return caches.match(event.request);
         })
     );
 });
