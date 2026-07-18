@@ -34,6 +34,7 @@ class FinanceApp {
         this.initCountrySelector();
         this.initMobileMenu();
         this.initServiceWorker();
+        this.initAutoSave();
         this.initDefaultCalculations();
     }
 
@@ -185,6 +186,43 @@ class FinanceApp {
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js').catch(() => {});
         }
+    }
+
+    initAutoSave() {
+        try {
+            const savedState = sessionStorage.getItem('financeProState');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                Object.keys(state).forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el && el.type !== 'radio' && el.type !== 'checkbox') {
+                        el.value = state[id];
+                    }
+                });
+                if (state._emiMode) {
+                    const radio = document.querySelector(`input[name="emiCalcMode"][value="${state._emiMode}"]`);
+                    if (radio) {
+                        radio.checked = true;
+                        if(window.toggleEmiMode) window.toggleEmiMode();
+                    }
+                }
+            }
+        } catch (e) {
+            console.error('Error restoring state:', e);
+        }
+
+        const saveState = () => {
+            const state = {};
+            document.querySelectorAll('input[type="number"], input[type="range"], select').forEach(el => {
+                if (el.id) state[el.id] = el.value;
+            });
+            const emiMode = document.querySelector('input[name="emiCalcMode"]:checked');
+            if (emiMode) state._emiMode = emiMode.value;
+            sessionStorage.setItem('financeProState', JSON.stringify(state));
+        };
+
+        document.addEventListener('input', saveState);
+        document.addEventListener('change', saveState);
     }
 
     initDefaultCalculations() {
